@@ -2,9 +2,9 @@ import cv2
 ESC = 27
 cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
 cap = cv2.VideoCapture(0)
-ratio = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)+1)
+ratio = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 WIDTH = 600
-HEIGHT = int(WIDTH/ratio)
+HEIGHT = int(WIDTH/ratio+1)
 while True:
     ret, frame = cap.read()
     frame = cv2.resize(frame, (WIDTH, HEIGHT))
