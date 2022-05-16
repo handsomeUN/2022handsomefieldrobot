@@ -2,7 +2,7 @@ import cv2
 ESC = 27
 cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
 cap = cv2.VideoCapture(0)
-ratio = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+ratio = cap.get(cv2.CAP_PROP_FRAME_WIDTH)/cap.get(cv2.CAP_PROP_FRAME_HEIGHT)+
 WIDTH = 600
 HEIGHT = int(WIDTH/ratio)
 while True:
