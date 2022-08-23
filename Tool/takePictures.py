@@ -2,7 +2,7 @@ import cv2
 
 camera_port = 0
 
-path1 = "C:\\Users\\BERLIN CHEN\\Desktop\\2021FR\\Photos\\box"
+path1 = "C:\\Users\\BERLIN CHEN\\Desktop\\Photos\\"
 path2 = ".jpg"
 
 cap = cv2.VideoCapture(camera_port) #w:640 h:480 for both notebook and camera
