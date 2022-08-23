@@ -1,0 +1,92 @@
+const int led_R=7, led_G=4,led_B=2;
+
+void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+    igniteLED(led_R,led_G,led_B,'1');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'2');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'3');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'4');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'5');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'6');
+    delay(1000);
+    igniteLED(led_R,led_G,led_B,'7');
+    delay(1000);
+}
+
+
+void igniteLED(int R,int G,int B,char choice){
+  switch(choice){
+    case '0':
+      light(R,G,B,0,0,0);  // light off
+      break;
+      
+    case '1':
+      light(R,G,B,255,255,255);  // white
+      break;
+ 
+    case '2':
+      light(R,G,B,255,0,0);  // Red
+      break;
+
+    case '3':
+      light(R,G,B,0,255,0);  // Green
+      break;
+     
+    case '4':
+      light(R,G,B,0,0,255);  // Blue
+      break;
+    
+    case '5':
+      light(R,G,B,0,255,255);  // Cyan
+      break;
+      
+    case '6':
+      light(R,G,B,255,255,0);  // Yellow
+      break;
+      
+    case '7':
+      light(R,G,B,255,0,255);  // Megenta
+      break;
+      
+  }
+}
+
+void resetLED(){
+     igniteLED(led_R,led_G,led_B,'0');
+}
+
+void light(int R,int G,int B,int r,int g,int b){
+  pinMode(R, OUTPUT);
+  pinMode(G, OUTPUT);
+  pinMode(B, OUTPUT);
+  
+    if(r==0){
+      digitalWrite(R,LOW);
+    }
+    else{
+      digitalWrite(R,HIGH);
+    }
+    if(g==0){
+      digitalWrite(G,LOW);
+    }
+    else{
+      digitalWrite(G,HIGH);
+    }
+    if(b==0){
+      digitalWrite(B,LOW);
+    }
+    else{
+      digitalWrite(B,HIGH);
+    }
+    
+  }
