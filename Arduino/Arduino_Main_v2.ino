@@ -9,9 +9,9 @@
 LiquidCrystal_PCF8574 lcd(0x27);
 
 // pins
-const int displayerLED_pin[3] = {23,25,27}; // R,G,B
-const int frontCamLED_pin[3] = {29,31,33}; 
-const int sideCamLED_pin[3] = {35,37,39}; 
+int displayerLED_pin[3] = {2,4,7}; //{23,25,27}; // R,G,B
+int frontCamLED_pin[3] = {29,31,33}; 
+int sideCamLED_pin[3] = {35,37,39}; 
 
 
 // declarations
@@ -22,14 +22,22 @@ void setup(){
     Serial.begin(9600);
     lcd.begin(16, 2);
     lcd.setBacklight(255);
+    
+    lcd.setCursor(0, 0);
+    lcd.print("STAGE:     ");
+    lcd.setCursor(0, 1);
+    lcd.print("STATE:     ");
+    
 }
 
 void loop(){
 
-    //Serial.println("A089898e");
+    //Serial.println("A039898e");
     if(Serial.available()){
         commandStr = Serial.readStringUntil('e');
-        //commandStr = "A011123";
+        Serial.print("From python:");
+        Serial.println(commandStr);
+        //commandStr = "A1011234344";
         
         Receiver = commandStr[0];
         STAGE = commandStr[1];
@@ -41,8 +49,11 @@ void loop(){
         other = commandStr[7];
     }
     
+//STAGE='1';
+//STATE='3';
+
     // LCD
-    LCD_display_STAGE_STATE(STAGE,STATE);
+    //LCD_display_STAGE_STATE(STAGE,STATE);
     
     // LED
     LED_display_STAGE_STATE(STAGE,STATE);
@@ -57,7 +68,7 @@ void loop(){
             }
             case '1': // N1
             {
-                
+                Serial.println("211111e");
                 
             }
             case '2': // N2
@@ -104,6 +115,50 @@ void LCD_display_STAGE_STATE(char stage, char state){
     lcd.print("TRACK");
 
 }
+
+
+void LED_display_STAGE_STATE(char stage,char state){
+
+    switch (state)
+    {
+    case '0': // TRACK
+        igniteLED(displayerLED_pin,'3'); // green
+        break;
+    case '1': // TRACK_R
+        igniteLED(displayerLED_pin,'5') ;// cyan
+        break;
+    case '2': // SLOW
+        igniteLED(displayerLED_pin,'2'); // red
+        break;
+    case '3': // DRIFT
+        igniteLED(displayerLED_pin,'6'); // yellow
+        break;
+    case '4': // TURN
+        igniteLED(displayerLED_pin,'4'); // blue 
+        break;
+    case '5': // U_TURN
+        igniteLED(displayerLED_pin,'4'); // blue 
+        break;
+    case '6': // FIND_SIGN, FIND_FRUIT, FIND_CASE
+        igniteLED(displayerLED_pin,'0');  
+        break;
+    case '7': // WATER_CASE
+        igniteLED(displayerLED_pin,'7'); // megenta
+        break;
+    case '8': // TRACK_U
+        igniteLED(displayerLED_pin,'5'); // cyan 
+        break;
+    case '9': // SWITCH
+        igniteLED(displayerLED_pin,'1'); // white 
+        break;   
+    
+    default:
+        break;
+    }
+
+}
+
+
 
 String STAGE_char2Str(char stage){
     switch(stage){
@@ -200,46 +255,4 @@ void light(int R,int G,int B,int r,int g,int b){
     }
     
   }
-
-
-void LED_display_STAGE_STATE(char stage,char state){
-
-    switch (stage)
-    {
-    case '0': // TRACK
-        igniteLED(displayerLED_pin,'3'); // green
-        break;
-    case '1': // TRACK_R
-        igniteLED(displayerLED_pin,'5') ;// cyan
-        break;
-    case '2': // SLOW
-        igniteLED(displayerLED_pin,'2'); // red
-        break;
-    case '3': // DRIFT
-        igniteLED(displayerLED_pin,'6'); // yellow
-        break;
-    case '4': // TURN
-        igniteLED(displayerLED_pin,'4'); // blue 
-        break;
-    case '5': // U_TURN
-        igniteLED(displayerLED_pin,'4'); // blue 
-        break;
-    case '6': // FIND_SIGN, FIND_FRUIT, FIND_CASE
-        igniteLED(displayerLED_pin,'0');  
-        break;
-    case '7': // WATER_CASE
-        igniteLED(displayerLED_pin,'7'); // megenta
-        break;
-    case '8': // TRACK_U
-        igniteLED(displayerLED_pin,'5'); // cyan 
-        break;
-    case '9': // SWITCH
-        igniteLED(displayerLED_pin,'1'); // white 
-        break;   
-    
-    default:
-        break;
-    }
-
-}
 
