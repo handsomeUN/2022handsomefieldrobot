@@ -1,6 +1,6 @@
 import cv2
 
-camera_port = 0
+camera_port = 1
 
 path1 = "C:\\Users\\BERLIN CHEN\\Desktop\\Photos\\"
 path2 = ".jpg"
