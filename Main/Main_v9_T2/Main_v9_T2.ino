@@ -239,7 +239,7 @@ void loop(){
                 U.STAGE_change_buttons(stage_button_pin);
             }
             if(STATE=='S'){ // SIGN
-                U.runMotor(100,100);
+                // U.runMotor(100,100);
                 char Color = sideCamLED;
                 if(Color=='R'){
                     U.igniteLED(displayerLED_pin,'2');
