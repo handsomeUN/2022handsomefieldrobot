@@ -186,8 +186,8 @@ try:
                             C = 'K'
                 
                     write_serial('A',5,'S',0,0,0,C)
-                    time.sleep(4)
-                    STAGE = 2
+                    # time.sleep(4)
+                    STAGE = 5
                     STATE = 'C'
 
 
