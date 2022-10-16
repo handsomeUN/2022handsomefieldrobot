@@ -114,8 +114,8 @@ def color_sign_recog(frame):
     
     return 'null'
 def take_shower(img):
-    red1_lower = np.array([0,140,0])
-    red1_upper = np.array([14,255,255])
+    red1_lower = np.array([0,90,0])
+    red1_upper = np.array([30,255,255])
     red2_lower = np.array([170,41,0])
     red2_upper = np.array([180,255,255])
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -165,33 +165,38 @@ def take_shower(img):
                 
     return max_x1, min_y1, max_x2, max_y2
 
-cap = cv2.VideoCapture(1)
-SIGN_COLOR = 'red'
-if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
-while True:
-    ret, img = cap.read()
-    if not ret:
-        print("Cannot receive frame")
-        break
+# cap = cv2.VideoCapture(1)
+# SIGN_COLOR = 'red'
+# if not cap.isOpened():
+#     print("Cannot open camera")
+#     exit()
+# while True:
+#     ret, img = cap.read()
+#     if not ret:
+#         print("Cannot receive frame")
+#         break
     
-    max_x1, min_y1, max_x2, max_y2 = take_shower(img)
+#     max_x1, min_y1, max_x2, max_y2 = take_shower(img)
+#     print("maxx1:",max_x1,"maxx2:",max_x2)
+#     if max_x2 < 500 and max_x2 > 470 and SIGN_COLOR == 'red':
+#         print("reach red!!")
+#         STATE = 'W'
+#         break
+#     elif max_x2 < 500 and max_x2 > 470 and SIGN_COLOR == 'yellow':
+#         print("reach yellow!!")
+#         STATE = 'W'
+#         break
+#     elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'blue':
+#         print("reach blue!!")
+#         STATE = 'W'
+#         break
+#     elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'black':
+#         print("reach black!!")
+#         STATE = 'W'
+#         break
 
-    if max_x1 < 1395 and max_x1 > 1385 and SIGN_COLOR=='red':
-        print("reach red!!")
-        break
-    if max_x1 < 1395 and max_x1 > 1385 and SIGN_COLOR=='yellow':
-        print("reach yellow!!")
-        break
-    if max_x1 < 495 and max_x1 > 505 and SIGN_COLOR=='blue':
-        print("reach blue!!")
-        break
-    if max_x1 < 495 and max_x1 > 505 and SIGN_COLOR=='black':
-        print("reach black!!")
-        break
-    # cv2.imshow('result', result)
-    if cv2.waitKey(1) == ord('q'):
-        break
-cap.release()
-cv2.destroyAllWindows()
+#     cv2.imshow('result', img)
+#     if cv2.waitKey(1) == ord('q'):
+#         break
+# cap.release()
+# cv2.destroyAllWindows()

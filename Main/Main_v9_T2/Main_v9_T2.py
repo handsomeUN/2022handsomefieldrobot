@@ -10,7 +10,7 @@ import cv2
 COM_PORT = 'COM6'
 ser = serial.Serial(COM_PORT, 9600)
 STAGE = 5
-STATE = 1
+STATE = 'W'
 pwmL = 0
 pwmR = 0
 frontCamLED = 0
@@ -174,66 +174,74 @@ try:
                     STAGE = 5
                     STATE = 'S'
                     
-                    if STATE == 'S': # SIGN
-                        C = 'n'
-                        if SIGN_COLOR == 'red':
-                            C = 'R'
-                        if SIGN_COLOR == 'yellow':
-                            C = 'Y'
-                        if SIGN_COLOR == 'blue':
-                            C = 'B'
-                        if SIGN_COLOR == 'black':
-                            C = 'K'
+            if STATE == 'S': # SIGN
+                C = 'n'
+                if SIGN_COLOR == 'red':
+                    C = 'R'
+                if SIGN_COLOR == 'yellow':
+                    C = 'Y'
+                if SIGN_COLOR == 'blue':
+                    C = 'B'
+                if SIGN_COLOR == 'black':
+                    C = 'K'
                 
-                    write_serial('A',5,'S',0,0,0,C)
-                    # time.sleep(4)
-                    STAGE = 5
-                    STATE = 'C'
+                write_serial('A',5,'S',0,0,0,C)
+                time.sleep(4)
+                STAGE = 5
+                STATE = 'C'
 
 
-                if STATE == 'C': # FindCase
-                    #TODO: extend the stepper to reach Y (140-905)
-                    #Max Y(905) of square
-                    #Min Y(140) of square
-                    write_serial('A',5,'C')
+            if STATE == 'C': # FindCase
+                #TODO: extend the stepper to reach Y (140-905)
+                #Max Y(905) of square 
+                #Min Y(140) of square
+                write_serial('A',5,'C')
+                #time.sleep(3)
 
-                    max_x1, min_y1, max_x2, max_y2 = util.take_shower(frame)
-                    if max_x1 < 1400 and max_x1 > 1380 and SIGN_COLOR == 'red':
-                        print("reach red!!")
-                        STATE = 'W'
-                        break
-                    elif max_x1 < 1400 and max_x1 > 1380 and SIGN_COLOR == 'yellow':
-                        print("reach yellow!!")
-                        STATE = 'W'
-                        break
-                    elif max_x1 < 490 and max_x1 > 510 and SIGN_COLOR == 'blue':
-                        print("reach blue!!")
-                        STATE = 'W'
-                        break
-                    elif max_x1 < 490 and max_x1 > 510 and SIGN_COLOR == 'black':
-                        print("reach black!!")
-                        STATE = 'W'
-                        break
+                ret, frame = sideCam.read()
+                if not ret:
+                    print("Cannot cap!!!")
+                    break
+                
+                max_x1, min_y1, max_x2, max_y2 = util.take_shower(frame)
+                print("maxx2:",max_x2)
+                if max_x2 < 550 and max_x2 > 450 and SIGN_COLOR == 'red':
+                    print("reach red!!")
+                    STATE = 'W'
+                    
+                elif max_x2 < 500 and max_x2 > 470 and SIGN_COLOR == 'yellow':
+                    print("reach yellow!!")
+                    STATE = 'W'
+
+                elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'blue':
+                    print("reach blue!!")
+                    STATE = 'W'
+                    
+                elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'black':
+                    print("reach black!!")
+                    STATE = 'W'
+                        
 
                     # X(500) of center blue
                     # X(1390) of center red
 
-                if STATE == 'W':
-                    if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
-                        write_serial('A',5,'W',0,0,0,0,1) #extend the stepper to reach yellow or black
+            if STATE == 'W':
+                SIGN_COLOR = 'red'
+                if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
+                    write_serial('A',5,'W',0,0,0,0,1) #extend the stepper to reach yellow or black
 
-                    write_serial('A',5,'W',0,0,0) #pee 38s 
-                    time.sleep(38)
+                write_serial('A',5,'W',0,0,0) #pee 38s 
+                time.sleep(38)
 
-                    if SIGN_COLOR == 'red' or SIGN_COLOR == 'blue':
-                        write_serial('A',5,'W',0,0,0,0,2) #retract the stepper (short retract)
-                    if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
-                        write_serial('A',5,'W',0,0,0,0,3) #retract the stepper (long retract)
-                    STATE == 'T'
+                if SIGN_COLOR == 'red' or SIGN_COLOR == 'blue':
+                    write_serial('A',5,'W',0,0,0,0,2) #retract the stepper (short retract)
+                if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
+                    write_serial('A',5,'W',0,0,0,0,3) #retract the stepper (long retract)
+                STATE == 'T'
 
                 
-                if STATE == 'T': #TRACK
-                    pass
+            if STATE == 'T': #TRACK
+                pass
 
         if STAGE == 6: #T3
             pass
@@ -275,7 +283,6 @@ try:
 except KeyboardInterrupt:
     ser.close()
     print('bye！')
-
 
 
 
