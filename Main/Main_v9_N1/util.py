@@ -22,8 +22,8 @@ def recognition(img, distance, shape):
         triangle_passArea = 1835.7*(distance**2) - 3994.3*distance + 12240
         circle_passArea = 3760.7*(distance**2) - 9059.3*distance + 22140
 
-        color1 = ((0,43,50),(10,255,255))
-        color2 = ((170,43,50),(180,255,255))
+        color1 = ((0,100,140),(13,255,255))
+        color2 = ((170,186,145),(180,255,255))
         lower1 = np.array(color1[0], dtype='uint8')
         upper1 = np.array(color1[1], dtype='uint8')
         lower2 = np.array(color2[0], dtype='uint8')

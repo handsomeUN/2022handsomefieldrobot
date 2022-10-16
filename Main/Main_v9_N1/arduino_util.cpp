@@ -289,7 +289,7 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
 
     //U.igniteLED(TRACK_ultra_LED,'3'); // green
     //Serial.print("Keep going!!!");
-    runMotor(100,100); // keep going straight
+    runMotor(140,150); // keep going straight
   
 }
     
@@ -300,19 +300,19 @@ void UTIL::runMotor(int pwm_L, int pwm_R){
   
 
   if(pwm_L>0){
-    analogWrite(12,pwm_L);
-    analogWrite(11,0);
-  }else{
+    analogWrite(11,pwm_L);
     analogWrite(12,0);
-    analogWrite(11,-pwm_L);
+  }else{
+    analogWrite(11,0);
+    analogWrite(12,-pwm_L);
   }
   
   if(pwm_R>0){
-    analogWrite(6,pwm_R);
-    analogWrite(5,0);
-  }else{
+    analogWrite(5,pwm_R);
     analogWrite(6,0);
-    analogWrite(5,-pwm_R);
+  }else{
+    analogWrite(5,0);
+    analogWrite(6,-pwm_R);
   }
   
 }

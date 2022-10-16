@@ -14,8 +14,8 @@ LiquidCrystal_PCF8574 lcd(0x27);
 // pins
 int displayerLED_pin[3] = {29,30,31}; 
 int stage_button_pin[8] = {A2,A3,A4,A5,A6,A7,A8,A9}; // STOP,N1,N2,N3,T1,T2,T3,U
-int ultra_trig_pin[2] = {18,24};
-int ultra_echo_pin[2] = {19,25};
+int ultra_trig_pin[2] = {24,18};
+int ultra_echo_pin[2] = {25,19};
 
 int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
@@ -138,17 +138,21 @@ void loop(){
             if(STATE=='3'){
                 
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
-                U.runMotor(150, 150);
-                delay(4000);
+                U.runMotor(100, 100);
+                delay(3000);
                 U.runMotor(100, -100);
-                delay(2200);
+                delay(3000);
                 U.runMotor(150, 150);
-                delay(3200);  
+                delay(5000);  
                 U.runMotor(100, -100);
-                delay(2000);
-                Serial.println("Pxx19");
+                delay(2400);
+                
+                U.runMotor(100,100);
+                delay(5000);
                 U.runMotor(0,0);
                 delay(2000);
+
+                Serial.println("Pxx19");
             }
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);

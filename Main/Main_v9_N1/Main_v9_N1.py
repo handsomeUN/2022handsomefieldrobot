@@ -30,7 +30,7 @@ def write_serial(receiver='A',stage=0,state=0,pwm_L=0,pwm_R=0,fCam=0,sCam=0,step
         print("\n\nwrite serial error\n\n")
 
 try:
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
     while True:
 
         time.sleep(1)
