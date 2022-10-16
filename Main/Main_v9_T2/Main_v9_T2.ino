@@ -244,7 +244,7 @@ void loop(){
                 U.STAGE_change_buttons(stage_button_pin);
             }
             if(STATE=='S'){ // SIGN
-                // U.runMotor(100,100);
+                U.runMotor(0,0);
                 char Color = sideCamLED;
                 if(Color=='R'){
                     U.igniteLED(displayerLED_pin,'2');
@@ -267,8 +267,8 @@ void loop(){
                         stepper2.run();
 
                         if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial == 0 ){ //extend to the red blue area
-                            stepper1.move(9100);
-                            stepper2.move(9100);  
+                            stepper1.move(4500);
+                            stepper2.move(4500);  
                             stepper_initial++;
                         }
                         if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0)
@@ -283,37 +283,51 @@ void loop(){
             }
             if(STATE=='W'){// WATERING
                 U.runMotor(0,0);
-                while(true){
+                Serial.println("D11111111111");
+
+                while(stepperMotor=='1'){
                     stepper1.run();
                     stepper2.run();
-
-                    if(stepperMotor==1){ //extend to yellow or black
+                    Serial.println("D!!!!");
+                    if(stepperMotor=='1'){ //extend to yellow or black
                         if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(900);
-                            stepper2.move(900);  
+                            stepper1.move(4600);
+                            stepper2.move(4600);  
                             stepper_front_ag++;
                         }
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag != 0){
+                        break;
+                    }   
+                }
+                Serial.print("Djhjhljhjkh");
+                Serial.println(stepperMotor);
+                if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
                         digitalWrite(pump_relay,HIGH);
-                        delay(38000);
+                        delay(5000);
                         digitalWrite(pump_relay,LOW);
                         watering ++;
                     }
-
-                    if(stepperMotor==2){ //short retract
-
+                    
+                commandStr = Serial.readStringUntil('e');
+                stepperMotor = commandStr[11];
+                while(stepperMotor!='0'){
+                    stepper1.run();
+                    stepper2.run();
+                    if(stepperMotor=='2'){ //short retract
+                        Serial.println("Dshort retract");
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(-4500);
+                            stepper2.move(-4500);   
+                            stepper_back++;
+                            Serial.println("Dstepper back");
+                        }
+                    }
+                    if(stepperMotor=='3'){ //long retract
+                        
                         if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
                             stepper1.move(-9100);
                             stepper2.move(-9100);   
-                            stepper_back++;
-                        }
-                    }
-                    if(stepperMotor==3){ //long retract
-                        
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(-10000);
-                            stepper2.move(-10000);   
                             stepper_back++;
                         }
                     }

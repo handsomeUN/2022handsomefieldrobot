@@ -229,19 +229,23 @@ try:
                 SIGN_COLOR = 'red'
                 if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
                     write_serial('A',5,'W',0,0,0,0,1) #extend the stepper to reach yellow or black
+                    time.sleep(20)
 
                 write_serial('A',5,'W',0,0,0) #pee 38s 
-                time.sleep(38)
+                time.sleep(5)
 
                 if SIGN_COLOR == 'red' or SIGN_COLOR == 'blue':
                     write_serial('A',5,'W',0,0,0,0,2) #retract the stepper (short retract)
+                    time.sleep(5)
+                    # STATE = 'T'
                 if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
                     write_serial('A',5,'W',0,0,0,0,3) #retract the stepper (long retract)
-                STATE == 'T'
+                    time.sleep(5)
+                    # STATE = 'T'
 
                 
             if STATE == 'T': #TRACK
-                pass
+                write_serial('A',5,'T',0,0,0)
 
         if STAGE == 6: #T3
             pass
@@ -278,7 +282,7 @@ try:
                 
         """ Write messages to Arduino""" 
         #print("start writing serial...")
-        write_serial('A',STAGE,STATE,pwmL,pwmR,frontCamLED,sideCamLED,Stepper,Pump)
+        # write_serial('A',STAGE,STATE,pwmL,pwmR,frontCamLED,sideCamLED,Stepper,Pump)
 
 except KeyboardInterrupt:
     ser.close()
