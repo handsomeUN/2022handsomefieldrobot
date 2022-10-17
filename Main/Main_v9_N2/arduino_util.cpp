@@ -77,12 +77,15 @@ void UTIL::LED_display_STAGE_STATE(int displayerLED_pin[],char stage,char state)
     case '5': // U_TURN
         igniteLED(displayerLED_pin,'4'); // blue 
         break;
-    case '6': // TRACK_U
+    case '6': // FORWARD
         igniteLED(displayerLED_pin,'5'); // cyan 
         break;
     case '7': // SWITCH
         igniteLED(displayerLED_pin,'1'); // white 
         break;   
+    case '8': // TRACK 2
+        igniteLED(displayerLED_pin,'3');// green
+        break;
     case 'S': // SIGN
         //igniteLED(displayerLED_pin,'1'); // white 
         break;   
@@ -93,7 +96,7 @@ void UTIL::LED_display_STAGE_STATE(int displayerLED_pin[],char stage,char state)
         igniteLED(displayerLED_pin,'7'); // megenta 
         break;   
     case 'D': // DROP
-        igniteLED(displayerLED_pin,'7'); // megenta 
+        igniteLED(displayerLED_pin,'1'); // white
         break;   
     
     default:
@@ -293,26 +296,25 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
   
 }
     
-
 void UTIL::runMotor(int pwm_L, int pwm_R){
   
   //Serial.println("D run motor!!!");
   
 
   if(pwm_L>0){
-    analogWrite(12,pwm_L);
-    analogWrite(11,0);
-  }else{
+    analogWrite(11,pwm_L);
     analogWrite(12,0);
-    analogWrite(11,-pwm_L);
+  }else{
+    analogWrite(11,0);
+    analogWrite(12,-pwm_L);
   }
   
   if(pwm_R>0){
-    analogWrite(6,pwm_R);
-    analogWrite(5,0);
-  }else{
+    analogWrite(5,pwm_R);
     analogWrite(6,0);
-    analogWrite(5,-pwm_R);
+  }else{
+    analogWrite(5,0);
+    analogWrite(6,-pwm_R);
   }
   
 }
