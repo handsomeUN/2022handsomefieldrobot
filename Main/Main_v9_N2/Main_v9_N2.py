@@ -11,7 +11,7 @@ import util
 COM_PORT = 'COM6'
 ser = serial.Serial(COM_PORT, 9600)
 STAGE = 2
-STATE = 'G'
+STATE = 6
 pwmL = 0
 pwmR = 0
 frontCamLED = 0
@@ -140,15 +140,16 @@ try:
                 #time.sleep(10000)
                 STAGE = 2
                 STATE = 1
-                continue
+                # continue
                 
                 
             if STATE == 1: # TRACK
-                #write_serial('A',2,1)
-                time.sleep(10) #TBD
-                STAGE = 2
-                STATE = 'D'
-                #write_serial('A',2,'D')
+                write_serial('A',2,1)
+                # time.sleep(10) #TBD
+                # STAGE = 2
+                # STATE = 'D'
+                # #write_serial('A',2,'D')
+                
                 
             if STATE == 'D': # DROP
                 pass

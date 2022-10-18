@@ -212,6 +212,7 @@ void loop(){
                 int stepper_back = 0;
                 int grab = 0;
 
+                digitalWrite(13,HIGH);
                 while(true){
                     stepper1.run();
                     stepper2.run();
@@ -240,8 +241,11 @@ void loop(){
 
                 }
                 Serial.println("Pxx11");
-                STATE = '1';
                 StartTime = millis();
+                // Serial.print("D Start time:");
+                // Serial.println(StartTime);
+
+                STATE = '1';
             }
             lcd.setCursor(6, 0);
             lcd.print(STAGE_char2Str(STAGE)); //STAGE_char2Str(stage));
@@ -249,9 +253,13 @@ void loop(){
             lcd.print(STATE_char2Str(STATE)); //STATE_char2Str(state));
 
             if(STATE=='1'){ // TRACK 1
+                digitalWrite(13,LOW);
                 myservo1.write(50);
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
-                if(millis()-StartTime < 8000){
+                int EndTime = millis();
+                // Serial.print("D End time:");
+                // Serial.println(EndTime);
+                if(EndTime-StartTime < 5000){
 
                     int L_read=0, R_read=0;
                     for(int i=0;i<20;i++){
@@ -266,7 +274,7 @@ void loop(){
                     
                 }else{
                     STATE = 'D';
-                  //  Serial.println("Pxx1D");
+                    //Serial.println("Pxx1D");
                 }
             }
             lcd.setCursor(6, 0);
@@ -304,7 +312,7 @@ void loop(){
                         break;
                     }
                 }
-                //Serial.println("Pxx18");
+                Serial.println("Pxx18");
                 STATE = '8';
             }
             if(STATE=='8'){ // TRACK 2

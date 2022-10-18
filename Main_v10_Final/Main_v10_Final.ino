@@ -24,18 +24,14 @@ LiquidCrystal_PCF8574 lcd(0x27);
 
 // pins
 int displayerLED_pin[3] = {29,30,31}; 
-int stage_button_pin[8] = {A2,A3,A4,A5,A6,A7,8,9}; // STOP,N1,N2,N3,T1,T2,T3,U
+int stage_button_pin[8] = {A2,A3,A4,A5,A6,A7,A8,A9}; // STOP,N1,N2,N3,T1,T2,T3,U
 int ultra_trig_pin[2] = {18,24};
 int ultra_echo_pin[2] = {19,25};
 
 int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
 
-int stepper_motor_A[4] = {38,39,40,41};
-int stepper_motor_B[4] = {42,43,44,45};
 int pump_relay = 4;
-int servo_claw = 58; // A4
-int servo_camera = 59; // A5
 
 // declarations
 String commandStr;
@@ -44,6 +40,11 @@ int PWM_L, PWM_R;
 
 Ultrasonic Ultra_L(ultra_trig_pin[0],ultra_echo_pin[0]);
 Ultrasonic Ultra_R(ultra_trig_pin[1],ultra_echo_pin[1]);
+
+bool N1_bool = true;
+bool N2_bool = true;
+bool N3_bool = true;
+int StartTime;
 
 void setup(){
 
@@ -109,10 +110,10 @@ void loop(){
             STAGE = commandStr[1];
             STATE = commandStr[2];
 
-            Serial.print("D STAGE-");
-            Serial.println(STAGE);
-            Serial.print("D STATE-");
-            Serial.println(STATE);
+            // Serial.print("D STAGE-");
+            // Serial.println(STAGE);
+            // Serial.print("D STATE-");
+            // Serial.println(STATE);
 
             pwmL[0] = commandStr[3];
             pwmL[1] = commandStr[4];
@@ -163,7 +164,7 @@ void loop(){
                 delay(50);
                 U.STAGE_change_buttons(stage_button_pin);
             }
-            if(STATE=='3'){
+            if(STATE=='3'&& N1_bool){
                 
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
                 U.runMotor(150, 150);
@@ -174,22 +175,183 @@ void loop(){
                 delay(3200);  
                 U.runMotor(100, -100);
                 delay(2000);
-                Serial.println("Pxx19");
+                //Serial.println("Pxx19");
                 U.runMotor(0,0);
                 delay(2000);
+                STATE = '9';
+                N1_bool = false;
             }
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
                 U.runMotor(0,0);
+                Serial.println("P1216");
             }
         }
         if (STAGE=='2') // N2
         {
-        
+            if(STATE=='6'){ // FORWARD
+                myservo1.write(5);
+                U.runMotor(200,230);
+            }
+            if(STATE=='2'){ // SLOW
+                myservo1.write(5);
+                U.runMotor(40,40);
+            }
+            if(STATE=='S'){ // SIGN
+                myservo1.write(5);
+                U.runMotor(0,0);
+                char Color = sideCamLED;
+                if(Color=='R'){
+                    U.igniteLED(displayerLED_pin,'2');
+                }
+                if(Color=='Y'){
+                    U.igniteLED(displayerLED_pin,'6');
+                }
+                if(Color=='B'){
+                    U.igniteLED(displayerLED_pin,'4');
+                }
+                if(Color=='K'){
+                    U.igniteLED(displayerLED_pin,'1');
+                }
+            }
+            if(STATE=='F'){ // FRUIT
+                U.runMotor(0,0);
+                myservo0.write(45);
+                myservo1.write(5);
+            }
+            if(STATE=='G'){ // GRAB
+                U.runMotor(0,0);
+                int stepper_front = 0;
+                int stepper_back = 0;
+                int grab = 0;
+
+                digitalWrite(13,HIGH);
+                while(true){
+                    stepper1.run();
+                    stepper2.run();
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        stepper1.move(9100);  
+                        stepper2.move(9100); 
+                        stepper_front++;
+                    }
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) {
+                        myservo1.write(5);
+                        delay(3000);
+                        myservo1.write(50);
+                        delay(3000);
+                        grab ++;
+                    }
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        stepper1.move(-9100);
+                        stepper2.move(-9100);   
+                        stepper_back++;
+                    }
+
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0)
+                    {
+                        break;
+                    }
+
+                }
+                Serial.println("Pxx11");
+                StartTime = millis();
+                // Serial.print("D Start time:");
+                // Serial.println(StartTime);
+
+                STATE = '1';
+            }
+            lcd.setCursor(6, 0);
+            lcd.print(STAGE_char2Str(STAGE)); //STAGE_char2Str(stage));
+            lcd.setCursor(6, 1);
+            lcd.print(STATE_char2Str(STATE)); //STATE_char2Str(state));
+
+            if(STATE=='1'){ // TRACK 1
+                digitalWrite(13,LOW);
+                myservo1.write(50);
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                int EndTime = millis();
+                // Serial.print("D End time:");
+                // Serial.println(EndTime);
+                if(EndTime-StartTime < 5000){
+
+                    int L_read=0, R_read=0;
+                    for(int i=0;i<20;i++){
+                        L_read += Ultra_L.read();
+                        R_read += Ultra_R.read();
+                        delay(10);
+                    }
+                    U.TRACK_checkDist(L_read/20,R_read/20);
+                    //Serial.println("D Start Tracking...");
+                    delay(50);
+                    U.STAGE_change_buttons(stage_button_pin);
+                    
+                }else{
+                    STATE = 'D';
+                    //Serial.println("Pxx1D");
+                }
+            }
+            lcd.setCursor(6, 0);
+            lcd.print(STAGE_char2Str(STAGE)); //STAGE_char2Str(stage));
+            lcd.setCursor(6, 1);
+            lcd.print(STATE_char2Str(STATE)); //STATE_char2Str(state));
+
+            if(STATE=='D'&& N2_bool){ // DROP
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                int stepper_front = 0;
+                int stepper_back = 0;
+                int grab = 0;
+                while(STATE=='D'){
+                    U.runMotor(0,0);
+                    stepper1.run();
+                    stepper2.run();
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        stepper1.move(9100);  
+                        stepper2.move(9100); 
+                        stepper_front++;
+                    }
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) {
+                        myservo1.write(5);
+                        delay(3000);
+                        grab ++;
+                    }
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        stepper1.move(-9100);
+                        stepper2.move(-9100);   
+                        stepper_back++;
+                    }
+
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0)
+                    {
+                        N2_bool = false;
+                        break;
+                    }
+                }
+                Serial.println("Pxx18");
+                STATE = '8';
+            }
+            if(STATE=='8'){ // TRACK 2
+                myservo1.write(5);
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                int L_read=0, R_read=0;
+                for(int i=0;i<20;i++){
+                    L_read += Ultra_L.read();
+                    R_read += Ultra_R.read();
+                    delay(10);
+                }
+                U.TRACK_checkDist(L_read/20,R_read/20);
+                //Serial.println("D Start Tracking...");
+                delay(50);
+                U.STAGE_change_buttons(stage_button_pin);   
+            }
         }
         if (STAGE=='3') // N3
         {
-            if(STATE=='3'){ // DRIFT - left back
+            U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+            lcd.setCursor(6, 0);
+            lcd.print(STAGE_char2Str(STAGE));
+            lcd.setCursor(6, 1);
+            lcd.print(STATE_char2Str(STATE));
+            if(STATE=='3' && N3_bool){ // DRIFT - left back
                 delay(3000);
                 U.runMotor(120, 120);
                 delay(4500);
@@ -202,9 +364,17 @@ void loop(){
                 Serial.println("Pxx11");
                 U.runMotor(0,0);
                 delay(2000);
+                N3_bool = false;
+                // STATE='1';
+                // Serial.flush();
             }
 
             if(STATE=='1'){ // TRACK slope
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                lcd.setCursor(6, 0);
+                lcd.print(STAGE_char2Str(STAGE)); //STAGE_char2Str(stage));
+                lcd.setCursor(6, 1);
+                lcd.print(STATE_char2Str(STATE)); //STATE_char2Str(state));
                 int L_read=0, R_read=0;
                 for(int i=0;i<20;i++){
                     L_read += Ultra_L.read();
@@ -217,7 +387,11 @@ void loop(){
             }
 
             if(STATE=='4'){ // TURN - right 90
-                digitalWrite(13,HIGH);
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                lcd.setCursor(6, 0);
+                lcd.print(STAGE_char2Str(STAGE)); //STAGE_char2Str(stage));
+                lcd.setCursor(6, 1);
+                lcd.print(STATE_char2Str(STATE)); //STATE_char2Str(state));
                 U.runMotor(150, 150);
                 delay(4000);
                 U.runMotor(100, -100);
@@ -227,7 +401,7 @@ void loop(){
                 Serial.println("Pxx19");
                 U.runMotor(0,0);
                 delay(2000);
-                // STATE='9';
+                STATE='9';
             }
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
@@ -251,15 +425,18 @@ void loop(){
             }
 
             if(STATE=='4'){ // TURN - right 90
+                
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
                 U.runMotor(150, 150);
                 delay(4000);
                 U.runMotor(100, -100);
                 delay(2200);
                 U.runMotor(150, 150);
                 delay(3200);
-                Serial.println("Pxx19");
+                //Serial.println("Pxx19");
                 U.runMotor(0,0);
                 delay(2000);
+                STATE = '9';
             }
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);

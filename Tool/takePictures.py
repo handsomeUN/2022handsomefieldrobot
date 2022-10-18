@@ -10,7 +10,7 @@ print(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 #cap.set(cv2.CAP_PROP_BRIGHTNESS,5)
 
-count = 1
+count = 51
 while True:
   ret, frame = cap.read()
   cv2.imshow('frame', frame)

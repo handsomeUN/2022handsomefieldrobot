@@ -127,8 +127,8 @@ def recognition(img, distance, shape):
     triangle_passArea = 1835.7*(distance**2) - 3994.3*distance + 12240
     circle_passArea = 3760.7*(distance**2) - 9059.3*distance + 22140
 
-    color1 = ((0,100,140),(13,255,255))
-    color2 = ((170,186,145),(180,255,255))
+    color1 = ((0,110,140),(17,255,255))
+    color2 = ((170,156,145),(180,255,255))
     lower1 = np.array(color1[0], dtype='uint8')
     upper1 = np.array(color1[1], dtype='uint8')
     lower2 = np.array(color2[0], dtype='uint8')
@@ -243,10 +243,13 @@ def u_road(frame):
 # while True:
 #     ret, frame = cap.read()
 #     color, output = color_sign_recog(frame)
-#     cv2.imshow("find sign",output)
+#     if_turn, img = recognition(frame,1.4,"Rec")
+#     print(if_turn)
+#     # cv2.imshow("find sign",output)
+#     cv2.imshow("find Rec",img)
 #     if cv2.waitKey(1) == ord('Q'):
 #         break
-#     print(color)  
+#     # print(color)  
     
 # cv2.waitKey()
 # cap.release()

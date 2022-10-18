@@ -276,7 +276,7 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
 
     if (DistL < 16)
     {
-      Serial.print("D DistL < 16:");
+      Serial.print("D DistL too close:");
       Serial.println(DistL);
       //igniteLED(TRACK_ultra_LED,'2'); // red
       //Serial.print("DistL too close!!!");
@@ -295,30 +295,30 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
 
 void UTIL::TRACK_slope(int DistL,int DistR){
     //Serial.println("D TRACKING!!!");
-    runMotor(140,160); // keep going straight
+    runMotor(100,120); // keep going straight
 
-    if (DistR < 34)
+    if (DistL < 26)
     {
       Serial.print("D DistR too close:");
       Serial.println(DistR);
       runMotor(0,0);
-      delay(2000);
-      runMotor(-120,120);
-      delay(600);
+      delay(100);
+      runMotor(-60,60);
+      delay(600); 
       runMotor(0,0);
-      delay(2000);
+      delay(100);
     }
 
-    if (DistL < 30)
+    if (DistR < 26)
     {
       Serial.print("D DistL too close:");
       Serial.println(DistL);
       runMotor(0,0);
-      delay(2000);
-      runMotor(-120,120);
+      delay(100);
+      runMotor(60,-60);
       delay(600);
       runMotor(0,0);
-      delay(2000);
+      delay(100);
     }
   
 }
