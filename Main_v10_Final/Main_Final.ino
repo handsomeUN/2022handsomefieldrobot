@@ -176,8 +176,6 @@ void loop(){
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
                 U.runMotor(0,0);
-                delay(2000);
-                Serial.println("P12xx");
             }
         }
         if (STAGE=='2') // N2
@@ -236,14 +234,74 @@ void loop(){
                     }
 
                 }
-
-
-                
                 Serial.println("Pxx11");
-                
             }
 
             if(STATE=='1'){ // TRACK
+                int L_read=0, R_read=0;
+                for(int i=0;i<20;i++){
+                    L_read += Ultra_L.read();
+                    R_read += Ultra_R.read();
+                    delay(10);
+                }
+                U.TRACK_slope(L_read/20,R_read/20);
+                //Serial.println("D Start Tracking...");
+                delay(50);
+                U.STAGE_change_buttons(stage_button_pin);
+            }
+            if(STATE=='D'){ // DROP
+
+            }
+        }
+        if (STAGE=='3') // N3
+        {
+            if(STATE=='3'){ // DRIFT - left back
+                delay(3000);
+                U.runMotor(120, 120);
+                delay(4500);
+                U.runMotor(-100, 100);
+                delay(3800);
+                U.runMotor(130, 130);
+                delay(7500);
+                U.runMotor(-100, 100);
+                delay(3500);
+                Serial.println("Pxx11");
+                U.runMotor(0,0);
+                delay(2000);
+            }
+
+            if(STATE=='1'){ // TRACK slope
+                int L_read=0, R_read=0;
+                for(int i=0;i<20;i++){
+                    L_read += Ultra_L.read();
+                    R_read += Ultra_R.read();
+                    delay(10);
+                }
+                U.TRACK_slope(L_read/20,R_read/20);
+                //Serial.println("D Start Tracking...");
+                delay(50);
+                U.STAGE_change_buttons(stage_button_pin);
+            }
+
+            if(STATE=='4'){ // TURN - right 90
+                U.runMotor(150, 150);
+                delay(4000);
+                U.runMotor(100, -100);
+                delay(2200);
+                U.runMotor(150, 150);
+                delay(3200);
+                Serial.println("Pxx19");
+                U.runMotor(0,0);
+                delay(2000);
+            }
+            if(STATE=='9'){
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(0,0);
+            }
+        }
+        if (STAGE=='4') // T1
+        {
+            if(STATE=='1'){ // TRACK slope
                 int L_read=0, R_read=0;
                 for(int i=0;i<20;i++){
                     L_read += Ultra_L.read();
@@ -255,17 +313,22 @@ void loop(){
                 delay(50);
                 U.STAGE_change_buttons(stage_button_pin);
             }
-            if(STATE=='D'){ // DROP
 
+            if(STATE=='4'){ // TURN - right 90
+                U.runMotor(150, 150);
+                delay(4000);
+                U.runMotor(100, -100);
+                delay(2200);
+                U.runMotor(150, 150);
+                delay(3200);
+                Serial.println("Pxx19");
+                U.runMotor(0,0);
+                delay(2000);
             }
-        }
-        if (STAGE=='3') // N3
-        {
-            /* code */
-        }
-        if (STAGE=='4') // T1
-        {
-            /* code */
+            if(STATE=='9'){
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(0,0);
+            }
         }
         if (STAGE=='5') // T2
         {
