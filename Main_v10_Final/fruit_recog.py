@@ -21,7 +21,7 @@ def fruit_recog(color):
     x_benchmark = width/2
     cls = 0
 
-    source = '0'
+    source = '3'
     weights = 'model_weight/best.pt'
     imgsz = 416
     cuda_device = '0'

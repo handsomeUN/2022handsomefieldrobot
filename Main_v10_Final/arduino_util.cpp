@@ -292,6 +292,36 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
     runMotor(100,100); // keep going straight
   
 }
+
+void UTIL::TRACK_slope(int DistL,int DistR){
+    //Serial.println("D TRACKING!!!");
+    runMotor(140,160); // keep going straight
+
+    if (DistR < 34)
+    {
+      Serial.print("D DistR too close:");
+      Serial.println(DistR);
+      runMotor(0,0);
+      delay(2000);
+      runMotor(-120,120);
+      delay(600);
+      runMotor(0,0);
+      delay(2000);
+    }
+
+    if (DistL < 30)
+    {
+      Serial.print("D DistL too close:");
+      Serial.println(DistL);
+      runMotor(0,0);
+      delay(2000);
+      runMotor(-120,120);
+      delay(600);
+      runMotor(0,0);
+      delay(2000);
+    }
+  
+}
     
 void UTIL::runMotor(int pwm_L, int pwm_R){
   

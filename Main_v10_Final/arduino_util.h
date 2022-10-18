@@ -24,6 +24,7 @@ void light(int R,int G,int B,int r,int g,int b);
 void resetLED(int displayerLED_pin[],int frontCamLED_pin[],int sideCamLED_pin[]);
 void STAGE_change_buttons(int stage_button_pin[]);
 void TRACK_checkDist(int DistL,int DistR);
+void TRACK_slope(int DistL,int DistR);
 void runMotor(int pwm_L, int pwm_R);
 };
 
