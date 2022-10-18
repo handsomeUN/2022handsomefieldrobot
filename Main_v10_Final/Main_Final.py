@@ -14,7 +14,7 @@ if NX:
 if NX:
     COM_PORT = 'dev/ttyACM0'
 else:
-    COM_PORT = 'COM6'
+    COM_PORT = 'COM9'
     
 ser = serial.Serial(COM_PORT, 9600)
 STAGE = 3
@@ -89,7 +89,7 @@ try:
                 
                 
             if STATE == 3: # DRIFT
-                write_serial('A',3,3)
+                write_serial('A',1,3)
 
             if STATE == 9: # SWITCH
                 write_serial('A',1,9)
@@ -111,14 +111,14 @@ try:
                 for i in range(10):
                     ret, frame = frontCam.read()
                     if not ret:
-                        print("Cannot cap!!!")
+                        print("Cannot cap: frontCam")
                         break
                     DRIFT, result = util.recognition(frame,1,"Rec")
                     #print(DRIFT)
                     if DRIFT:
                         driftCount+=1
                     
-                if driftCount>=8:
+                if driftCount>=0:
                     print("\n\n\nStart DRIFTing!!!\n\n\n")
                     STAGE = 3
                     STATE = 4
@@ -126,6 +126,9 @@ try:
             
             if STATE == 4: # TURN
                 write_serial('A',3,4)
+                # time.sleep(15)
+                # STAGE = 3
+                # STATE = 9
                     
             if STATE == 9: # SWITCH
                 write_serial('A',3,9)
@@ -141,7 +144,7 @@ try:
                 for i in range(10):
                     ret, frame = frontCam.read()
                     if not ret:
-                        print("Cannot cap!!!")
+                        print("Cannot cap: frontCam")
                         break
                     DRIFT, result = util.recognition(frame,0.8,"Rec")
                     #print(DRIFT)
@@ -175,7 +178,7 @@ try:
 
         """ Receive messages """
         while ser.in_waiting:
-            time.sleep(0.4)
+            time.sleep(0.2)
             #print('serial in waiting')
             echoStr = str(ser.readline().decode()).strip(' ').strip('\n')
             #print(str(echoStr))
