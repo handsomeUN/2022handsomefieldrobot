@@ -143,7 +143,7 @@ try:
                     if not ret:
                         print("Cannot cap!!!")
                         break
-                    DRIFT, result = util.recognition(frame,1,"Rec")
+                    DRIFT, result = util.recognition(frame,0.8,"Rec")
                     #print(DRIFT)
                     if DRIFT:
                         driftCount+=1
