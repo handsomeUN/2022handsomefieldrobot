@@ -18,9 +18,10 @@ if NX:
 else:
     COM_PORT = 'COM6'
     
+STAGE = 6
+STATE = 4
+
 ser = serial.Serial(COM_PORT, 9600)
-STAGE = 3
-STATE = 3
 pwmL = 0
 pwmR = 0
 frontCamLED = 0
@@ -43,10 +44,6 @@ def write_serial(receiver='A',stage=0,state=0,pwm_L=0,pwm_R=0,fCam=0,sCam=0,step
 
 
 try:
-    """
-    frontCam = cv2.VideoCapture(1)
-    sideCam = cv2.VideoCapture(2)
-    """
     
     Camera = cv2.VideoCapture(FrontCam_port)
     while True:
@@ -147,10 +144,16 @@ try:
             if STATE == 'F': # FRUIT
                 write_serial('A',2,'F')
                 Camera.release()
-                #fruit_recog.fruit_recog(SIGN_COLOR)
-                time.sleep(5)
-                STAGE = 2
-                STATE = 'G'
+                
+                if NX:
+                    FRUIT = fruit_recog.fruit_recog(SIGN_COLOR)
+                    if FRUIT:
+                        STAGE = 2
+                        STATE = 'G'    
+                else:
+                    time.sleep(5)
+                    STAGE = 2
+                    STATE = 'G'
                 
             if STATE == 'G': # GRAB
                 write_serial('A',2,'G')
@@ -274,7 +277,24 @@ try:
         if STAGE == 5: #T2
             pass
         if STAGE == 6: #T3
-            pass
+            
+            if STATE == 4: # TURN
+                write_serial('A',6,4)
+                time.sleep(15)
+                STAGE = 6
+                STATE = 6
+        
+            if STATE == 6: #FORWARD
+                write_serial('A',6,6)
+                time.sleep(5)
+                STAGE = 6
+                STATE = 7
+                
+            if STATE == 7: # TURN 2
+                write_serial('A',6,7)
+                time.sleep(15)
+                STAGE = 7
+        
         
         if STAGE == 7: #U
             

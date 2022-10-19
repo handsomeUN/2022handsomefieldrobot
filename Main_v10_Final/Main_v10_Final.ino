@@ -341,7 +341,7 @@ void loop(){
                 U.TRACK_checkDist(L_read/20,R_read/20);
                 //Serial.println("D Start Tracking...");
                 delay(50);
-                U.STAGE_change_buttons(stage_button_pin);   
+                U.STAGE_change_buttons(stage_button_pin);
             }
         }
         if (STAGE=='3') // N3
@@ -449,7 +449,38 @@ void loop(){
         }
         if (STAGE=='6') // T3
         {
-            /* code */
+            if(STATE=='4'){ // TURN - right 90
+                
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(150, 150);
+                delay(4000);
+                U.runMotor(100, -100);
+                delay(2200);
+                U.runMotor(150, 150);
+                delay(3200);
+                //Serial.println("Pxx19");
+                U.runMotor(0,0);
+                delay(2000);
+                STATE = '6';
+            }
+            if(STATE=='6'){ // FORWARD
+                U.runMotor(200,230);
+            }
+            if(STATE=='7'){ // TURN 2- right 90
+                
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(150, 150);
+                delay(4000);
+                U.runMotor(100, -100);
+                delay(2200);
+                U.runMotor(150, 150);
+                delay(3200);
+                //Serial.println("Pxx19");
+                U.runMotor(0,0);
+                delay(2000);
+                STAGE = '7';
+            }
+
         }
         if (STAGE=='7') // U
         {

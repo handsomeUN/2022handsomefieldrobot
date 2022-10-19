@@ -33,9 +33,9 @@ String UTIL::STAGE_char2Str(char stage){
 String UTIL::STATE_char2Str(char state){
     switch(state){
         case '0':
-            return "TRACK         ";
+            return "NON         ";
         case '1':
-            return "TRACK_R       ";
+            return "TRACK       ";
         case '2':
             return "SLOW          ";
         case '3':
@@ -45,13 +45,17 @@ String UTIL::STATE_char2Str(char state){
         case '5':
             return "U_TURN        ";
         case '6':
-            return "FIND          ";
+            return "FORWARD          ";
         case '7':
-            return "WATER_CASE    ";
-        case '8':
-            return "TRACK_U       ";
-        case '9':
-            return "SWITCH        ";
+            return "SWITCH    ";
+        case 'S':
+            return "SIGN       ";
+        case 'F':
+            return "FRUIT        ";
+        case 'G':
+            return "GRAB        ";
+        case 'D':
+            return "DROP        ";
     }
 }
 
