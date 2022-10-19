@@ -7,9 +7,6 @@
 #include <Ultrasonic.h>
 
 #include "arduino_util.h"
-#include <Servo.h>
-#include <Unistep2.h>
-
 
 UTIL U;
 LiquidCrystal_PCF8574 lcd(0x27);
@@ -17,8 +14,8 @@ LiquidCrystal_PCF8574 lcd(0x27);
 // pins
 int displayerLED_pin[3] = {29,30,31}; 
 int stage_button_pin[8] = {A2,A3,A4,A5,A6,A7,A8,A9}; // STOP,N1,N2,N3,T1,T2,T3,U
-int ultra_trig_pin[2] = {18,24};
-int ultra_echo_pin[2] = {19,25};
+int ultra_trig_pin[2] = {24,18};
+int ultra_echo_pin[2] = {25,19};
 
 int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
@@ -26,24 +23,15 @@ int motor_EN_pin[4] = {7,8,9,10};
 int stepper_motor_A[4] = {38,39,40,41};
 int stepper_motor_B[4] = {42,43,44,45};
 int pump_relay = 4;
-int servo_claw = A1;
-int servo_camera = A0;
-
+int servo_claw = 58; // A4
+int servo_camera = 59; // A5
 
 // declarations
 String commandStr;
 char Receiver, STAGE, STATE, pwmL[4], pwmR[4], frontCamLED, sideCamLED, stepperMotor, pump, other;
 int PWM_L, PWM_R;
-int watering = 0; 
-int stepper_front = 0;
-int stepper_front_ag = 0;
-int stepper_initial = 0;
-int stepper_back = 0;
 
-Servo myservo0;
-Servo myservo1;
-Unistep2 stepper1(38, 39, 40, 41, 4096, 1000);// IN1, IN2, IN3, IN4, 總step數, 每步的延遲(in micros)
-Unistep2 stepper2(42, 43, 44, 45, 4096, 1000);// IN1, IN2, IN3, IN4, 總step數, 每步的延遲(in micros)
+bool T3_bool = true;
 
 Ultrasonic Ultra_L(ultra_trig_pin[0],ultra_echo_pin[0]);
 Ultrasonic Ultra_R(ultra_trig_pin[1],ultra_echo_pin[1]);
@@ -67,17 +55,11 @@ void setup(){
     pinMode(motor_EN_pin[1],OUTPUT);
     pinMode(motor_EN_pin[2],OUTPUT);
     pinMode(motor_EN_pin[3],OUTPUT);
-    pinMode(A0, OUTPUT);
-    pinMode(A1, OUTPUT);
-    pinMode(4,OUTPUT);
-    myservo0.attach(servo_camera);  
-    myservo1.attach(servo_claw);
 
     digitalWrite(motor_EN_pin[0],HIGH);
     digitalWrite(motor_EN_pin[1],HIGH);
     digitalWrite(motor_EN_pin[2],HIGH);
     digitalWrite(motor_EN_pin[3],HIGH);
-
 
     Serial.begin(9600);
     lcd.begin(16, 2);
@@ -88,7 +70,6 @@ void setup(){
     lcd.print("STAGE:     ");
     lcd.setCursor(0, 1);
     lcd.print("STATE:     ");
-    myservo1.write(5);
 }
 
 void loop(){
@@ -144,11 +125,11 @@ void loop(){
         }
         if (STAGE=='1') // N1
         {
-
+           
         }
         if (STAGE=='2') // N2
         {
-           
+            
         }
         if (STAGE=='3') // N3
         {
@@ -160,8 +141,11 @@ void loop(){
         }
         if (STAGE=='5') // T2
         {
-            if(STATE=='1'){ // TRACK
-                myservo0.write(30);
+            /* code */
+        }
+        if (STAGE=='6') // T3
+        {
+             if(STATE=='1'){ // TRACK
                 int L_read=0, R_read=0;
                 for(int i=0;i<20;i++){
                     L_read += Ultra_L.read();
@@ -173,96 +157,26 @@ void loop(){
                 delay(50);
                 U.STAGE_change_buttons(stage_button_pin);
             }
-            if(STATE=='2'){ // SIGN
+            if(STATE=='3'&& T3_bool){
+                
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(150, 150);
+                delay(4000);
+                U.runMotor(100, -100);
+                delay(2200);
+                U.runMotor(100, 100);
+                delay(2000);
+                //Serial.println("Pxx19");
                 U.runMotor(0,0);
-                char Color = sideCamLED;
-                if(Color=='R'){
-                    U.igniteLED(displayerLED_pin,'2');
-                }
-                if(Color=='Y'){
-                    U.igniteLED(displayerLED_pin,'6');
-                }
-                if(Color=='B'){
-                    U.igniteLED(displayerLED_pin,'4');
-                }
-                if(Color=='K'){
-                    U.igniteLED(displayerLED_pin,'1');
-                }
+                delay(2000);
+                STATE = '9';
+                T3_bool = false;
             }
-            if(STATE=='3'){// FINDCASE
-                while(true){
-                        myservo0.write(90);
-                        myservo1.write(5);
-                        stepper1.run();
-                        stepper2.run();
-
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial == 0 ){ //extend to the red blue area
-                            stepper1.move(4500);
-                            stepper2.move(4500);  
-                            stepper_initial++;
-                        }
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial != 0)
-                        {
-                            U.runMotor(50,50);
-                            delay(1000);
-                            Serial.print(sideCamLED);
-                            if(sideCamLED=='Y'){
-                                U.runMotor(0,0);
-                                delay(1000);
-                                break;
-                                }
-                        }
-                }
-                
+            if(STATE=='9'){
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                U.runMotor(0,0);
+                Serial.println("P1711");
             }
-            if(STATE=='4'){// WATERING
-                Serial.println("D11111111111");
-
-                while(true){
-                    stepper1.run();
-                    stepper2.run();
-                    if(stepperMotor=='1'){
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                        stepper1.move(4600);  
-                        stepper2.move(4600); 
-                        stepper_front_ag++;
-                        }
-                    }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
-                        digitalWrite(pump_relay,HIGH);
-                        delay(5000);
-                        digitalWrite(pump_relay,LOW);
-                        watering++;
-                    }
-                    Serial.println(stepperMotor);
-                    if(stepperMotor=='2'){ //short retract
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(-4500);
-                            stepper2.move(-4500);   
-                            stepper_back++;
-                        }
-                    }
-                    if(stepperMotor=='3'){ //long retract
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(-9100);
-                            stepper2.move(-9100);   
-                            stepper_back++;
-                        }
-                    }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
-                        myservo0.write(45); //camera back to 45
-                        break;
-                    }
-                }
-            }
-                
-            if(STATE=='5'){// TRACK
-                
-            }
-        }
-        if (STAGE=='6') // T3
-        {
-            /* code */
         }
         if (STAGE=='7') // U
         {
@@ -323,3 +237,4 @@ String STATE_char2Str(char state){
 
     }
 }
+
