@@ -34,8 +34,6 @@ int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
 
 int pump_relay = 4;
-#define LS_f 3
-#define LS_b 2
 
 // declarations
 String commandStr;

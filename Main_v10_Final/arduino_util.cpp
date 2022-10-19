@@ -265,7 +265,7 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
     //Serial.println("D TRACKING!!!");
     runMotor(220,240); // keep going straight
 
-    if (DistL < 22)
+    if (DistR < 22)
     {
       Serial.print("D DistR < 16:");
       Serial.println(DistR);
@@ -278,7 +278,7 @@ void UTIL::TRACK_checkDist(int DistL,int DistR){
       delay(100);
     }
 
-    if (DistR < 22)
+    if (DistL < 22)
     {
       Serial.print("D DistL too close:");
       Serial.println(DistL);
