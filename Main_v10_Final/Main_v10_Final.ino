@@ -224,6 +224,8 @@ void loop(){
                 int stepper_front = 0;
                 int stepper_back = 0;
                 int grab = 0;
+                int back = 0;
+                int adjust = 0; 
 
                 digitalWrite(13,HIGH);
                 while(true){
@@ -234,21 +236,30 @@ void loop(){
                         stepper2.move(9100); 
                         stepper_front++;
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) {
+                    if((stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) || (digitalRead(LS_f) == HIGH && grab == 0)) {
+                        stepper1.stop();  
+                        stepper2.stop(); 
                         myservo1.write(5);
                         delay(3000);
                         myservo1.write(50);
                         delay(3000);
                         grab ++;
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                    if((stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ) || (grab == 1 && stepper_back == 0 )){
                         stepper1.move(-9100);
                         stepper2.move(-9100);   
                         stepper_back++;
                     }
 
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0)
-                    {
+                    if(digitalRead(LS_b) == HIGH && back == 0){
+                        stepper1.stop();  
+                        stepper2.stop(); 
+                        back ++;        
+                    }
+                    if(back == 1 && adjust == 0){
+                        stepper1.move(300);
+                        stepper2.move(300);
+                        adjust++;
                         break;
                     }
 
