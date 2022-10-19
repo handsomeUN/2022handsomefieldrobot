@@ -32,7 +32,8 @@ int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
 
 int pump_relay = 4;
-int LS_b,LS_f;
+#define LS_f 3
+#define LS_b 2
 
 // declarations
 String commandStr;
@@ -49,6 +50,9 @@ bool N3_bool = true;
 int StartTime;
 
 void setup(){
+
+    pinMode(LS_f, INPUT_PULLUP);
+    pinMode(LS_b, INPUT_PULLUP);
 
     pinMode(displayerLED_pin[0],OUTPUT);
     pinMode(displayerLED_pin[1],OUTPUT);
@@ -197,7 +201,7 @@ void loop(){
             }
             if(STATE=='2'){ // SLOW
                 myservo1.write(5);
-                U.runMotor(40,40);
+                U.runMotor(40,45);
             }
             if(STATE=='S'){ // SIGN
                 myservo1.write(5);
@@ -217,7 +221,7 @@ void loop(){
                 }
             }
             if(STATE=='F'){ // FRUIT
-                U.runMotor(0,0);
+                U.runMotor(40,45);
                 myservo0.write(45);
                 myservo1.write(5);
             }
@@ -313,6 +317,8 @@ void loop(){
                 int stepper_front = 0;
                 int stepper_back = 0;
                 int grab = 0;
+                int back = 0;
+                int adjust = 0;
                 while(STATE=='D'){
                     U.runMotor(0,0);
                     stepper1.run();
@@ -322,19 +328,25 @@ void loop(){
                         stepper2.move(9100); 
                         stepper_front++;
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) {
+                    if((stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && grab == 0) || (digitalRead(LS_f) == HIGH && grab == 0)) {
                         myservo1.write(5);
                         delay(3000);
                         grab ++;
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                    if((stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ) || (grab == 1 && stepper_back == 0 )){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
                         stepper1.move(-9100);
                         stepper2.move(-9100);   
                         stepper_back++;
                     }
-
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0)
-                    {
+                    if(digitalRead(LS_b) == HIGH && back == 0){
+                        stepper1.stop();  
+                        stepper2.stop(); 
+                        back ++;        
+                    }
+                    if(back == 1 && adjust == 0){
+                        stepper1.move(300);
+                        stepper2.move(300);
+                        adjust++;
                         N2_bool = false;
                         break;
                     }

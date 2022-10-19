@@ -67,7 +67,7 @@ void UTIL::LED_display_STAGE_STATE(int displayerLED_pin[],char stage,char state)
         igniteLED(displayerLED_pin,'1'); // no light
         break;
     case '1': // TRACK
-        igniteLED(displayerLED_pin,'3');// green
+        igniteLED(displayerLED_pin,'3'); // green
         break;
     case '2': // SLOW
         igniteLED(displayerLED_pin,'2'); // red
@@ -97,7 +97,7 @@ void UTIL::LED_display_STAGE_STATE(int displayerLED_pin[],char stage,char state)
         igniteLED(displayerLED_pin,'7'); // megenta 
         break;   
     case 'D': // DROP
-        igniteLED(displayerLED_pin,'7'); // megenta 
+        igniteLED(displayerLED_pin,'1'); // white
         break;   
     
     default:
@@ -263,68 +263,68 @@ void UTIL::STAGE_change_buttons(int stage_button_pin[]){
 
 void UTIL::TRACK_checkDist(int DistL,int DistR){
     //Serial.println("D TRACKING!!!");
-    runMotor(200,200); // keep going straight
+    runMotor(220,240); // keep going straight
 
-    if (DistR < 16)
+    if (DistL < 22)
     {
       Serial.print("D DistR < 16:");
       Serial.println(DistR);
       //igniteLED(TRACK_ultra_LED,'2'); // red
       //Serial.print("DistR too close!!!");
       runMotor(-150,-150); // backward
-      delay(900);
+      delay(600);
       //igniteLED(TRACK_ultra_LED,'6'); // Y
       runMotor(-120,120); // turning
-      delay(300);
+      delay(100);
     }
 
-    if (DistL < 16)
+    if (DistR < 22)
     {
       Serial.print("D DistL too close:");
       Serial.println(DistL);
       //igniteLED(TRACK_ultra_LED,'2'); // red
       //Serial.print("DistL too close!!!");
       runMotor(-150,-150); // backward
-      delay(900);
+      delay(600);
       //igniteLED(TRACK_ultra_LED,'6'); // Y
       runMotor(120,-120); // turning
-      delay(300);
+      delay(100);
     }
 
     //U.igniteLED(TRACK_ultra_LED,'3'); // green
     //Serial.print("Keep going!!!");
-    runMotor(100,100); // keep going straight
+   // runMotor(100,100); // keep going straight
   
 }
 
 void UTIL::TRACK_slope(int DistL,int DistR){
     //Serial.println("D TRACKING!!!");
-    runMotor(100,120); // keep going straight
+    runMotor(180,200); // keep going straight
 
-    if (DistL < 26)
-    {
-      Serial.print("D DistR too close:");
-      Serial.println(DistR);
-      runMotor(0,0);
-      delay(100);
-      runMotor(-60,60);
-      delay(600); 
-      runMotor(0,0);
-      delay(100);
-    }
-
-    if (DistR < 26)
+    if (DistL < 20)
     {
       Serial.print("D DistL too close:");
       Serial.println(DistL);
       runMotor(0,0);
-      delay(100);
-      runMotor(60,-60);
-      delay(600);
-      runMotor(0,0);
-      delay(100);
+      delay(1000);
+      runMotor(200,150);
+      delay(1000);
+      runMotor(150,200);
+      delay(500);
     }
-  
+
+    if (DistR < 20)
+    {
+      Serial.print("D DistR too close:");
+      Serial.println(DistR);
+      runMotor(0,0);
+      delay(1000);
+      runMotor(150,200);
+      delay(1000);
+      runMotor(200,150);
+      delay(500);
+    }
+    runMotor(180,200);
 }
     
 void UTIL::runMotor(int pwm_L, int pwm_R){

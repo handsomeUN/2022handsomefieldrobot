@@ -1,16 +1,16 @@
 import cv2
 
-camera_port = 1
+camera_port = 2
 
-path1 = "C:\\Users\\BERLIN CHEN\\Desktop\\Photos\\"
+path1 = "C:\\Users\\BERLIN CHEN\\Desktop\\2022FR\\Photos\\"
 path2 = ".jpg"
 
 cap = cv2.VideoCapture(camera_port) #w:640 h:480 for both notebook and camera
 print(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-#cap.set(cv2.CAP_PROP_BRIGHTNESS,5)
+cap.set(cv2.CAP_PROP_EXPOSURE,-8)
 
-count = 51
+count = 90
 while True:
   ret, frame = cap.read()
   cv2.imshow('frame', frame)

@@ -18,10 +18,9 @@ if NX:
 else:
     COM_PORT = 'COM6'
     
-STAGE = 6
-STATE = 4
+STAGE = 1
+STATE = 1
 
-ser = serial.Serial(COM_PORT, 9600)
 pwmL = 0
 pwmR = 0
 frontCamLED = 0
@@ -44,8 +43,12 @@ def write_serial(receiver='A',stage=0,state=0,pwm_L=0,pwm_R=0,fCam=0,sCam=0,step
 
 
 try:
-    
-    Camera = cv2.VideoCapture(FrontCam_port)
+    try:
+        Camera = cv2.VideoCapture(FrontCam_port)
+    except:
+        Camera = cv2.VideoCapture(FrontCam_port)
+        
+    ser = serial.Serial(COM_PORT, 9600)
     while True:
 
         time.sleep(1)
@@ -63,8 +66,17 @@ try:
                 
                 #cv2.imshow("result",frame)
                 driftCount = 0
-                Camera.release()
-                Camera = cv2.VideoCapture(FrontCam_port)
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                    
+                try:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                except:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                    
+                Camera.set(cv2.CAP_PROP_EXPOSURE,-8)
                 for i in range(10):
                     ret, frame = Camera.read()
                     if not ret:
@@ -102,8 +114,14 @@ try:
                 
                 ColorCount=0
                 SIGN_Color='null'
-                Camera.release()
-                Camera = cv2.VideoCapture(SideCam_port)
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                try:
+                    Camera = cv2.VideoCapture(SideCam_port)
+                except:
+                    Camera = cv2.VideoCapture(SideCam_port)
                     
                 for i in range(10):
                     ret, frame = Camera.read()
@@ -143,8 +161,12 @@ try:
                 
             if STATE == 'F': # FRUIT
                 write_serial('A',2,'F')
-                Camera.release()
                 
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                    
                 if NX:
                     FRUIT = fruit_recog.fruit_recog(SIGN_COLOR)
                     if FRUIT:
@@ -179,8 +201,14 @@ try:
                 
                 driftCount = 0
                 
-                Camera.release()
-                Camera = cv2.VideoCapture(FrontCam_port)
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                try:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                except:
+                    Camera = cv2.VideoCapture(FrontCam_port)
                 for i in range(10):
                     ret, frame = Camera.read()
                     if not ret:
@@ -209,8 +237,16 @@ try:
                 write_serial('A',3,1)
                 driftCount = 0
                 
-                Camera.release()
-                Camera = cv2.VideoCapture(FrontCam_port)
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                
+                try:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                except:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                    
                 for i in range(10):
                     ret, frame = Camera.read()
                     if not ret:
@@ -230,14 +266,17 @@ try:
             if STATE == 4: # TURN
                 write_serial('A',3,4)
                 time.sleep(15)
-                STAGE = 3
-                STATE = 9
-                    
-            if STATE == 9: # SWITCH
-                write_serial('A',3,9)
-                time.sleep(3)
+                # STAGE = 3
+                # STATE = 9
                 STAGE = 4
-                STATE = 1
+                STATE = 1    
+                ser.flush()
+                
+            # if STATE == 9: # SWITCH
+            #     write_serial('A',3,9)
+            #     time.sleep(3)
+            #     STAGE = 4
+            #     STATE = 1
                 
                 
         if STAGE == 4: #T1
@@ -245,8 +284,16 @@ try:
                 write_serial('A',4,1)
                 driftCount = 0
                 
-                Camera.release()
-                Camera = cv2.VideoCapture(FrontCam_port)
+                try:
+                    Camera.release()
+                except:
+                    Camera.release()
+                
+                try:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                except:
+                    Camera = cv2.VideoCapture(FrontCam_port)
+                    
                 for i in range(10):
                     ret, frame = Camera.read()
                     if not ret:
@@ -297,9 +344,14 @@ try:
         
         
         if STAGE == 7: #U
-            
-            Camera.release()
-            Camera = cv2.VideoCapture(SideCam_port)
+            try:
+                Camera.release()
+            except:
+                Camera.release()
+            try:
+                Camera = cv2.VideoCapture(SideCam_port)
+            except:
+                Camera = cv2.VideoCapture(SideCam_port)
             ret, frame = Camera.read()
             PWM = util.u_road(frame)
             ser.write(str.encode("A70"+PWM[0]+PWM[1]+"0000e"))
@@ -330,7 +382,12 @@ try:
                             STATE = 6
                         if STAGE==3: #N3
                             STATE = 3
-                            """ TBD """
+                        if STAGE==4: #T1
+                            STATE = 1
+                        if STAGE==5: #T2
+                            STATE = 1
+                        if STAGE==6: #T3
+                            STATE = 4
  
                     if if_STATE_changed == '1': # STATE changed
                         #print("Change state to:",STATE_changed)

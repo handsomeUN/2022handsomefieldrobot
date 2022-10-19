@@ -127,8 +127,8 @@ def recognition(img, distance, shape):
     triangle_passArea = 1835.7*(distance**2) - 3994.3*distance + 12240
     circle_passArea = 3760.7*(distance**2) - 9059.3*distance + 22140
 
-    color1 = ((0,110,140),(17,255,255))
-    color2 = ((170,156,145),(180,255,255))
+    color1 = ((0,110,110),(17,255,255))
+    color2 = ((170,156,0),(180,255,255))
     lower1 = np.array(color1[0], dtype='uint8')
     upper1 = np.array(color1[1], dtype='uint8')
     lower2 = np.array(color2[0], dtype='uint8')
@@ -198,8 +198,8 @@ def recognition(img, distance, shape):
 
 
 def u_road(frame):
-    pwm = ('100', '120')
-    middle = 260
+    pwm = ('140', '160')
+    middle = 345
     pipe_lower = np.array([0,102,186])   
     pipe_upper = np.array([16,255,255]) 
 
@@ -226,24 +226,24 @@ def u_road(frame):
 
         if cY > middle+1:
             #turn left
-            pwm = ('045', '125')
+            pwm = ('080', '200')
             print('turn left')
             return pwm
         elif cY < middle-1:
             #turn right
-            pwm = ('120','050')
+            pwm = ('180','60')
             print('turn right')
             return pwm
             
     return pwm
 
 
-# cap = cv2.VideoCapture(1)
+# cap = cv2.VideoCapture(2)
 
 # while True:
 #     ret, frame = cap.read()
 #     color, output = color_sign_recog(frame)
-#     if_turn, img = recognition(frame,1.4,"Rec")
+#     if_turn, img = recognition(frame,1,"Rec")
 #     print(if_turn)
 #     # cv2.imshow("find sign",output)
 #     cv2.imshow("find Rec",img)
