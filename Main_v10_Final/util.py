@@ -200,8 +200,8 @@ def recognition(img, distance, shape):
 def u_road(frame):
     pwm = ('100', '120')
     middle = 260
-    pipe_lower = np.array([0,102,133])   
-    pipe_upper = np.array([20,255,255]) 
+    pipe_lower = np.array([0,102,186])   
+    pipe_upper = np.array([16,255,255]) 
 
     frame = cv2.flip(frame, 1)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
