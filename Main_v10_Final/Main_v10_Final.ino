@@ -14,6 +14,8 @@ Servo myservo0;
 Unistep2 stepper1(38, 39, 40, 41, 4096, 1000);// IN1, IN2, IN3, IN4, 總step數, 每步的延遲(in micros)
 Unistep2 stepper2(42, 43, 44, 45, 4096, 1000);// IN1, IN2, IN3, IN4, 總step數, 每步的延遲(in micros)
 
+#define LS_f 3
+#define LS_b 2
 int stepper_front = 0;
 int stepper_back = 0;
 int grab = 0;
@@ -89,6 +91,8 @@ void setup(){
     myservo0.attach(A0);
     myservo0.write(30);
     
+    pinMode(LS_f, INPUT_PULLUP);
+    pinMode(LS_b, INPUT_PULLUP);
 
 }
 
