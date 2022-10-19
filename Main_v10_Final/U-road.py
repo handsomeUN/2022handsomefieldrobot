@@ -14,17 +14,18 @@ ser = serial.Serial(COM_PORT, 9600)
 def u_road(frame):
     pwm = ('150', '150')
     middle = 320
-    pipe_lower = np.array([0,102,133])   
-    pipe_upper = np.array([20,255,255]) 
+    pipe_lower = np.array([0,0,165])   
+    pipe_upper = np.array([25,255,255]) 
 
-    frame = cv2.flip(frame, 1)
+    # frame = cv2.flip(frame, 1)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    hsv = cv2.GaussianBlur(hsv, (15, 15), 0)
-    hsv = hsv[0:,480:]
+    hsv = cv2.GaussianBlur(hsv, (19, 19), 0)
+    hsv = hsv[0:,0:160]
 
     pipe_mask = cv2.inRange(hsv, pipe_lower, pipe_upper) 
+    pipe_mask = cv2.erode(pipe_mask, None, iterations=8)
+    pipe_mask = cv2.dilate(pipe_mask, None, iterations=18)
     pipe_mask = cv2.erode(pipe_mask, None, iterations=2)
-    pipe_mask = cv2.dilate(pipe_mask, None, iterations=2)
 
     pipe_contours, pipe_hierarchy= cv2.findContours(pipe_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
