@@ -32,6 +32,7 @@ int motor_Hbridge_pin[4] = {12,11,6,5};
 int motor_EN_pin[4] = {7,8,9,10};
 
 int pump_relay = 4;
+int LS_b,LS_f;
 
 // declarations
 String commandStr;
@@ -40,6 +41,7 @@ int PWM_L, PWM_R;
 
 Ultrasonic Ultra_L(ultra_trig_pin[0],ultra_echo_pin[0]);
 Ultrasonic Ultra_R(ultra_trig_pin[1],ultra_echo_pin[1]);
+
 
 bool N1_bool = true;
 bool N2_bool = true;
@@ -466,7 +468,7 @@ void loop(){
                 U.runMotor(150, 150);
                 delay(4000);
                 U.runMotor(100, -100);
-                delay(2200);
+                delay(3000);
                 U.runMotor(150, 150);
                 delay(3200);
                 //Serial.println("Pxx19");
@@ -475,6 +477,7 @@ void loop(){
                 STATE = '6';
             }
             if(STATE=='6'){ // FORWARD
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
                 U.runMotor(200,230);
             }
             if(STATE=='7'){ // TURN 2- right 90
