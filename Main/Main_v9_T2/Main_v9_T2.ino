@@ -145,80 +145,10 @@ void loop(){
         if (STAGE=='1') // N1
         {
 
-            if(STATE=='1'){ // TRACK
-                int L_read=0, R_read=0;
-                for(int i=0;i<20;i++){
-                    L_read += Ultra_L.read();
-                    R_read += Ultra_R.read();
-                    delay(10);
-                }
-                U.TRACK_checkDist(L_read/20,R_read/20);
-                //Serial.println("D Start Tracking...");
-                delay(50);
-                U.STAGE_change_buttons(stage_button_pin);
-            }
-            if(STATE=='3'){
-                
-                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
-                U.runMotor(150, 150);
-                delay(4000);
-                U.runMotor(100, -100);
-                delay(2200);
-                U.runMotor(150, 150);
-                delay(3200);  
-                U.runMotor(100, -100);
-                delay(2000);
-                Serial.println("Pxx19");
-                U.runMotor(0,0);
-                delay(2000);
-            }
-            if(STATE=='9'){
-                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
-                U.runMotor(0,0);
-                delay(2000);
-                Serial.println("P12xx");
-            }
         }
         if (STAGE=='2') // N2
         {
-            if(STATE=='1'){ // TRACK
-                int L_read=0, R_read=0;
-                for(int i=0;i<20;i++){
-                    L_read += Ultra_L.read();
-                    R_read += Ultra_R.read();
-                    delay(10);
-                }
-                U.TRACK_checkDist(L_read/20,R_read/20);
-                //Serial.println("D Start Tracking...");
-                delay(50);
-                U.STAGE_change_buttons(stage_button_pin);
-            }
-            if(STATE=='S'){ // SIGN
-                
-                U.runMotor(100,100);
-                char Color = sideCamLED;
-                if(Color=='R'){
-                    U.igniteLED(displayerLED_pin,'2');
-                }
-                if(Color=='Y'){
-                    U.igniteLED(displayerLED_pin,'6');
-                }
-                if(Color=='B'){
-                    U.igniteLED(displayerLED_pin,'4');
-                }
-                if(Color=='K'){
-                    U.igniteLED(displayerLED_pin,'1');
-                }
-            }
-            if(STATE=='F'){ // FRUIT
-
-            }
-            if(STATE=='G'){ // GRAB
-
-            }
-            if(STATE=='D'){ // DROP
-
-            }
+           
         }
         if (STAGE=='3') // N3
         {
@@ -243,7 +173,7 @@ void loop(){
                 delay(50);
                 U.STAGE_change_buttons(stage_button_pin);
             }
-            if(STATE=='S'){ // SIGN
+            if(STATE=='2'){ // SIGN
                 U.runMotor(0,0);
                 char Color = sideCamLED;
                 if(Color=='R'){
@@ -259,7 +189,7 @@ void loop(){
                     U.igniteLED(displayerLED_pin,'1');
                 }
             }
-            if(STATE=='C'){// FINDCASE
+            if(STATE=='3'){// FINDCASE
                 while(true){
                         myservo0.write(90);
                         myservo1.write(5);
@@ -271,74 +201,63 @@ void loop(){
                             stepper2.move(4500);  
                             stepper_initial++;
                         }
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0)
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial != 0)
                         {
                             U.runMotor(50,50);
-                            
-                            break;
+                            delay(1000);
+                            Serial.print(sideCamLED);
+                            if(sideCamLED=='Y'){
+                                U.runMotor(0,0);
+                                delay(1000);
+                                break;
+                                }
                         }
-                        
-
                 }
+                
             }
-            if(STATE=='W'){// WATERING
-                U.runMotor(0,0);
+            if(STATE=='4'){// WATERING
                 Serial.println("D11111111111");
 
-                while(stepperMotor=='1'){
+                while(true){
                     stepper1.run();
                     stepper2.run();
-                    Serial.println("D!!!!");
-                    if(stepperMotor=='1'){ //extend to yellow or black
+                    if(stepperMotor=='1'){
                         if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(4600);
-                            stepper2.move(4600);  
-                            stepper_front_ag++;
+                        stepper1.move(4600);  
+                        stepper2.move(4600); 
+                        stepper_front_ag++;
                         }
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag != 0){
-                        break;
-                    }   
-                }
-                Serial.print("Djhjhljhjkh");
-                Serial.println(stepperMotor);
-                if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
                         digitalWrite(pump_relay,HIGH);
                         delay(5000);
                         digitalWrite(pump_relay,LOW);
-                        watering ++;
+                        watering++;
                     }
-                    
-                commandStr = Serial.readStringUntil('e');
-                stepperMotor = commandStr[11];
-                while(stepperMotor!='0'){
-                    stepper1.run();
-                    stepper2.run();
+                    Serial.println(stepperMotor);
                     if(stepperMotor=='2'){ //short retract
-                        Serial.println("Dshort retract");
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
                             stepper1.move(-4500);
                             stepper2.move(-4500);   
                             stepper_back++;
-                            Serial.println("Dstepper back");
                         }
                     }
                     if(stepperMotor=='3'){ //long retract
-                        
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
                             stepper1.move(-9100);
                             stepper2.move(-9100);   
                             stepper_back++;
                         }
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back != 0){
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
+                        myservo0.write(45); //camera back to 45
                         break;
                     }
                 }
-                myservo0.write(45); //camera back to 45
             }
-            if(STATE=='T'){// TRACK
-
+                
+            if(STATE=='5'){// TRACK
+                
             }
         }
         if (STAGE=='6') // T3
