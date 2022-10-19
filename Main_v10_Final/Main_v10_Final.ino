@@ -172,11 +172,11 @@ void loop(){
                 U.runMotor(150, 150);
                 delay(4000);
                 U.runMotor(100, -100);
-                delay(2200);
+                delay(3200);
                 U.runMotor(150, 150);
-                delay(3200);  
+                delay(6000);  
                 U.runMotor(100, -100);
-                delay(2000);
+                delay(3200);
                 //Serial.println("Pxx19");
                 U.runMotor(0,0);
                 delay(2000);
@@ -408,9 +408,9 @@ void loop(){
                 U.runMotor(150, 150);
                 delay(4000);
                 U.runMotor(100, -100);
-                delay(2200);
+                delay(6000);
                 U.runMotor(150, 150);
-                delay(3200);
+                delay(8000);
                 Serial.println("Pxx19");
                 U.runMotor(0,0);
                 delay(2000);
@@ -418,8 +418,7 @@ void loop(){
             }
             if(STATE=='9'){
                 U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
-                U.runMotor(0,0);
-                
+                U.runMotor(0,0);     
             }
         }
         if (STAGE=='4') // T1
