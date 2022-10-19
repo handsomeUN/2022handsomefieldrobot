@@ -34,11 +34,15 @@ int servo_camera = A0;
 String commandStr;
 char Receiver, STAGE, STATE, pwmL[4], pwmR[4], frontCamLED, sideCamLED, stepperMotor, pump, other;
 int PWM_L, PWM_R;
-int watering = 0; 
-int stepper_front = 0;
-int stepper_front_ag = 0;
-int stepper_initial = 0;
+bool T2_bool = true;
+int watering1 = 0;
+int watering2 = 0;
+int watering3 = 0;
+int watering4 = 0;
 int stepper_back = 0;
+int stepper_front_bla = 0;
+int stepper_front_y = 0;
+int stepper_initial = 0;
 
 Servo myservo0;
 Servo myservo1;
@@ -189,77 +193,151 @@ void loop(){
                     U.igniteLED(displayerLED_pin,'1');
                 }
             }
-            if(STATE=='3'){// FINDCASE
-                while(true){
-                        myservo0.write(90);
-                        myservo1.write(5);
-                        stepper1.run();
-                        stepper2.run();
-
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial == 0 ){ //extend to the red blue area
-                            stepper1.move(4500);
-                            stepper2.move(4500);  
-                            stepper_initial++;
-                        }
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial != 0)
-                        {
-                            U.runMotor(50,50);
-                            delay(1000);
-                            Serial.print(sideCamLED);
-                            if(sideCamLED=='Y'){
-                                U.runMotor(0,0);
-                                delay(1000);
-                                break;
-                                }
-                        }
+            if(STATE=='5'){// turnAround
+                if(T2_bool==true){
+                    myservo0.write(45); //camera back to 45
+                    U.runMotor(100,-100);
+                    delay(7000);
+                    T2_bool = false;
                 }
-                
+                U.LED_display_STAGE_STATE(displayerLED_pin,STAGE,STATE);
+                int L_read=0, R_read=0;
+                for(int i=0;i<20;i++){
+                    L_read += Ultra_L.read();
+                    R_read += Ultra_R.read();
+                    delay(10);
+                }
+                U.TRACK_checkDist(L_read/20,R_read/20);
+                delay(50);
+                U.STAGE_change_buttons(stage_button_pin);
             }
             if(STATE=='4'){// WATERING
-                Serial.println("D11111111111");
+
+                if(stepperMotor=='1'){//red
+                    
+                    while(true){
+                        stepper1.run();
+                        stepper2.run();
+                        if(watering1 == 0){ //pee 38s
+                            digitalWrite(pump_relay,LOW);
+                            delay(5000);
+                            digitalWrite(pump_relay,HIGH);
+                            watering1++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(-4500);
+                            stepper2.move(-4500);
+                            stepper_back++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
+                            break;
+                        }
+                    }
+                }
+                else if(stepperMotor=='2'){//blue
+                    
+                    while(true){
+                        stepper1.run();
+                        stepper2.run();
+                        if(watering2 == 0){ //pee 38s
+                            digitalWrite(pump_relay,LOW);
+                            delay(5000);
+                            digitalWrite(pump_relay,HIGH);
+                            watering2++;
+                        }
+                        if(stepper_back == 0 && watering2 == 1){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(-4500);
+                            stepper2.move(-4500);
+                            stepper_back++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
+                            break;
+                        }
+                    }
+                }
+                else if(stepperMotor=='3'){//black
+                    
+                    while(true){
+                        stepper1.run();
+                        stepper2.run();
+                        if(stepper_front_bla == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(4000);  
+                            stepper2.move(4000); 
+                            stepper_front_bla++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering3 == 0){ //pee 38s
+                            digitalWrite(pump_relay,LOW);
+                            delay(5000);
+                            digitalWrite(pump_relay,HIGH);
+                            watering3++;
+                        }
+                        if(stepper_back == 0 && watering3 ==1){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(-8500);
+                            stepper2.move(-8500);   
+                            stepper_back++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
+                            break;
+                        }
+                    }
+                }
+                if(stepperMotor=='4'){//yellow
+
+                    while(true){
+                        stepper1.run();
+                        stepper2.run();
+                        if(stepper_front_y == 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(4000);  
+                            stepper2.move(4000); 
+                            stepper_front_y++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering4 == 0){ //pee 38s
+                            digitalWrite(pump_relay,LOW);
+                            delay(5000);
+                            digitalWrite(pump_relay,HIGH);
+                            watering4++;
+                        }
+                        if(stepper_back == 0 && watering4 == 1){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
+                            stepper1.move(-8500);
+                            stepper2.move(-8500);   
+                            stepper_back++;
+                        }
+                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
+                            break;
+                        }
+                    }
+                }
+                Serial.println("Pxx15");
+                STATE = '5';
+            }
+            if(STATE=='3'){// FINDCASE
+                myservo0.write(90);
+                myservo1.write(5);
 
                 while(true){
                     stepper1.run();
                     stepper2.run();
-                    if(stepperMotor=='1'){
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_front_ag == 0 ){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                        stepper1.move(4600);  
-                        stepper2.move(4600); 
-                        stepper_front_ag++;
-                        }
+
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial == 0 ){ //extend to the red blue area
+                        stepper1.move(4500);
+                        stepper2.move(4500);
+                        stepper_initial++;
                     }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && watering == 0 ){ //pee 38s
-                        digitalWrite(pump_relay,HIGH);
-                        delay(5000);
-                        digitalWrite(pump_relay,LOW);
-                        watering++;
-                    }
-                    Serial.println(stepperMotor);
-                    if(stepperMotor=='2'){ //short retract
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(-4500);
-                            stepper2.move(-4500);   
-                            stepper_back++;
-                        }
-                    }
-                    if(stepperMotor=='3'){ //long retract
-                        if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back == 0 && watering != 0){ // 如果stepsToGo=0，表示步進馬達已轉完應走的step了
-                            stepper1.move(-9100);
-                            stepper2.move(-9100);   
-                            stepper_back++;
-                        }
-                    }
-                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_back!=0){
-                        myservo0.write(45); //camera back to 45
+                    if(stepper1.stepsToGo() == 0 && stepper2.stepsToGo() == 0 && stepper_initial != 0){
                         break;
                     }
                 }
-            }
-                
-            if(STATE=='5'){// TRACK
-                
+                U.runMotor(50,50);
+                if(sideCamLED=='Y'){
+                    U.runMotor(0,0);
+                    Serial.println("Pxx14");
+                    STATE = '4';
+                }
             }
         }
+                
+            
+        
         if (STAGE=='6') // T3
         {
             /* code */
@@ -270,6 +348,7 @@ void loop(){
         }
 
 }
+
 
 
 String STAGE_char2Str(char stage){

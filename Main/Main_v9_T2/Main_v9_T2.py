@@ -15,11 +15,10 @@ SideCam_port = 1
 if NX:
     COM_PORT = 'dev/ttyACM0'
 else:
-    COM_PORT = '/dev/cu.usbmodem14101'
+    COM_PORT = '/dev/cu.usbmodem143401'
 
-ser = serial.Serial(COM_PORT, 9600)
 STAGE = 5
-STATE = 4
+STATE = 1
 pwmL = 0
 pwmR = 0
 frontCamLED = 0
@@ -45,7 +44,12 @@ SIGN_COLOR = 'null'
 try:
     # frontCam = cv2.VideoCapture(0)
     # sideCam = cv2.VideoCapture(1)
-    Camera = cv2.VideoCapture(FrontCam_port)
+    try:
+        Camera = cv2.VideoCapture(FrontCam_port)
+    except:
+        Camera = cv2.VideoCapture(FrontCam_port)
+
+    ser = serial.Serial(COM_PORT, 9600)
 
     while True:
 
@@ -72,8 +76,12 @@ try:
                 ColorCount=0
                 SIGN_Color='null'
 
-                Camera.release()
-                Camera = cv2.VideoCapture(SideCam_port)
+                try:
+                    Camera.release()
+                    Camera = cv2.VideoCapture(SideCam_port)
+                except:
+                    Camera.release()
+                    Camera = cv2.VideoCapture(SideCam_port)
 
                 for i in range(10):
                     ret, frame = Camera.read()
@@ -105,11 +113,35 @@ try:
                     C = 'K'
                 
                 write_serial('A',5,2,0,0,0,C)
-                time.sleep(4)
+                time.sleep(3)
                 STAGE = 5
                 STATE = 3
 
 
+            if STATE == 5: #turnAround
+                write_serial('A',5,5)
+                time.sleep(15)
+                STAGE = 6
+                STATE = 1
+                        
+
+            if STATE == 4:
+                # SIGN_COLOR = 'red'
+
+                if SIGN_COLOR == 'red':
+                    write_serial('A',5,4,0,0,0,0,1) 
+
+                elif SIGN_COLOR == 'blue':
+                    write_serial('A',5,4,0,0,0,0,2) 
+
+                elif SIGN_COLOR == 'black':
+                    write_serial('A',5,4,0,0,0,0,3) 
+
+                elif SIGN_COLOR == 'yellow':
+                    write_serial('A',5,4,0,0,0,0,4) 
+
+
+                
             if STATE == 3: # FindCase
                 write_serial('A',5,3)
                 # Camera.release()
@@ -117,53 +149,25 @@ try:
                 if not ret:
                     print("Cannot cap!!!")
                     break
-                
+                frame = cv2.resize(frame,(320,480))
                 max_x1, min_y1, max_x2, max_y2 = util.take_shower(frame)
                 print("maxx2:",max_x2)
-                if max_x2 < 1200 and max_x2 > 1000 and SIGN_COLOR == 'red':
+                if max_x2 < 225 and max_x2 > 185 and SIGN_COLOR == 'red':
                     print("reach red!!")
                     write_serial('A',5,3,0,0,0,'Y')
-                    STATE = 4
                     
-                elif max_x2 < 500 and max_x2 > 470 and SIGN_COLOR == 'yellow':
+                elif max_x2 < 225 and max_x2 > 185 and SIGN_COLOR == 'yellow':
                     print("reach yellow!!")
                     write_serial('A',5,3,0,0,0,'Y')
-                    STATE = 4
 
-                elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'blue':
+                elif max_x2 < 120 and max_x2 > 80 and SIGN_COLOR == 'blue':
                     print("reach blue!!")
                     write_serial('A',5,3,0,0,0,'Y')
-                    STATE = 4
                     
-                elif max_x2 < 220 and max_x2 > 200 and SIGN_COLOR == 'black':
+                elif max_x2 < 120 and max_x2 > 80 and SIGN_COLOR == 'black':
                     print("reach black!!")
                     write_serial('A',5,3,0,0,0,'Y')
-                    STATE = 4
-                        
 
-            if STATE == 4:
-                SIGN_COLOR = 'red'
-
-                if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
-                    write_serial('A',5,4,0,0,0,0,1) #extend the stepper to reach yellow or black
-                    time.sleep(10)
-                
-                if water==True:
-                    write_serial('A',5,4,0,0,0) #pee 38s 
-                    time.sleep(10)
-                    water = False
-
-                if SIGN_COLOR == 'red' or SIGN_COLOR == 'blue':
-                    write_serial('A',5,4,0,0,0,0,2) #retract the stepper (short retract)
-                    time.sleep(10)
-                    STATE = 5
-                if SIGN_COLOR == 'yellow' or SIGN_COLOR == 'black':
-                    write_serial('A',5,4,0,0,0,0,3) #retract the stepper (long retract)
-                    time.sleep(15)
-                    STATE = 5
-                
-            if STATE == 5: #TRACK
-                write_serial('A',5,5,0,0,0)
 
         if STAGE == 6: #T3
             pass
